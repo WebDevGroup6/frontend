@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    color-scheme: light dark;
+    font-synthesis: none;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  /* Estilos para modo oscuro/claro */
+  :root {
+    --color-text: rgba(255, 255, 255, 0.87);
+    --color-bg: #242424;
+    --color-link: #646cff;
+    --color-link-hover: #535bf2;
+    --color-button-bg: #1a1a1a;
+  }
+
+  @media (prefers-color-scheme: light) {
+    :root {
+      --color-text: #213547;
+      --color-bg: #ffffff;
+      --color-link-hover: #747bff;
+      --color-button-bg: #f9f9f9;
+    }
+  }
+
+  /* Estilos base */
+  body {
+    @apply min-h-screen m-0 p-0 bg-[var(--color-bg)] text-[var(--color-text)];
+  }
+
+  a {
+    @apply font-medium text-[var(--color-link)] no-underline;
+    &:hover {
+      @apply text-[var(--color-link-hover)];
+    }
+  }
+
+  button {
+    @apply rounded-lg border border-transparent px-6 py-3 text-base font-medium font-sans bg-[var(--color-button-bg)] cursor-pointer transition-all;
+    &:hover {
+      @apply border-[#646cff];
+    }
+    &:focus {
+      @apply outline outline-2 outline-offset-2 outline-[#646cff]; /* Cambiado de outline-auto */
+    }
+  }
+}

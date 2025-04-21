@@ -1,3 +1,4 @@
-/* 
-  you can have your global css here if needed
-*/
+@import "tailwindcss";
+@import "flowbite/src/themes/default";
+@plugin "flowbite/plugin";
+@source "../node_modules/flowbite";

@@ -183,10 +183,10 @@ export default function Employees() {
     return null; // Or a default message
   };
 
+  return (
+    <div className="bg-gray-100 min-h-screen w-full p-4">
+      <div className="max-w-7xl mx-auto">
 
-return (
-  <div className="bg-gray-100 min-h-screen w-full p-4">
-    <div className="max-w-7xl mx-auto">
 
       <EmployeeFilterBar
         searchTerm={searchTerm}
@@ -197,13 +197,14 @@ return (
         onAdd={handleAdd} // Use the updated handler
       />
 
-      {/* Display delete error */}
-      {deleteError && (
-        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-          <strong className="font-bold">Delete Error: </strong>
-          <span className="block sm:inline">{deleteError}</span>
-        </div>
-      )}
+        {/* Display delete error */}
+        {deleteError && (
+          <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <strong className="font-bold">Delete Error: </strong>
+            <span className="block sm:inline">{deleteError}</span>
+          </div>
+        )}
+
 
       {/* Table section */}
         {loadingEmployees ? (

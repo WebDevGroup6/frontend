@@ -31,9 +31,13 @@ export default function Laboratories() {
     findLaboratoryById,
   } = useLaboratories();
 
+  
   // Modal State
+
+
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalMode, setModalMode] = useState('view'); // 'view', 'add', 'edit'
+  const [modalMode, setModalMode] = useState('view'); 
+  // 'view', 'add', 'edit'
   const [selectedLaboratoryId, setSelectedLaboratoryId] = useState(null);
   const [modalLoading, setModalLoading] = useState(false);
   const [modalError, setModalError] = useState(null);
@@ -122,6 +126,7 @@ export default function Laboratories() {
   // --- Render Logic ---
   const selectedLaboratoryData = selectedLaboratoryId ? findLaboratoryById(selectedLaboratoryId) : null;
 
+  
   const renderModalContent = () => {
     if (modalMode === 'view' && selectedLaboratoryData) {
       return (
@@ -238,6 +243,9 @@ export default function Laboratories() {
       <Modal isOpen={isModalOpen} onClose={closeModal}>
         {renderModalContent()}
       </Modal>
+
+
+
     </div>
   );
 }

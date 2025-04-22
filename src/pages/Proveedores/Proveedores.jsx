@@ -25,3 +25,5 @@ function Proveedores() {
     </div>
   );
 }
+
+export default Proveedores;

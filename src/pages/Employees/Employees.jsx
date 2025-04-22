@@ -184,44 +184,28 @@ export default function Employees() {
   };
 
 
-  return (
-    <div className="bg-gray-100 min-h-screen w-full p-4">
-<<<<<<< HEAD
-      <div className="max-w-7xl mx-auto"
-       
-      >
-        
-        {/* Search and action buttons section */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center">
-            <button className="bg-white border border-gray-300 rounded-lg px-3 py-2 flex items-center">
-              Categoria
-              <svg className="w-4 h-4 ml-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-              </svg>
-            </button>
-=======
-      <div className="max-w-7xl mx-auto">
+return (
+  <div className="bg-gray-100 min-h-screen w-full p-4">
+    <div className="max-w-7xl mx-auto">
 
-        <EmployeeFilterBar
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          selectedCargo={selectedCargo}
-          setSelectedCargo={setSelectedCargo}
-          uniqueCargos={uniqueCargos}
-          onAdd={handleAdd} // Use the updated handler
-        />
+      <EmployeeFilterBar
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        selectedCargo={selectedCargo}
+        setSelectedCargo={setSelectedCargo}
+        uniqueCargos={uniqueCargos}
+        onAdd={handleAdd} // Use the updated handler
+      />
 
-        {/* Display delete error */}
-        {deleteError && (
-          <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-            <strong className="font-bold">Delete Error: </strong>
-            <span className="block sm:inline">{deleteError}</span>
->>>>>>> f2d8a8e7ca8bdebe6be09b60579d0014b6fc9f5a
-          </div>
-        )}
+      {/* Display delete error */}
+      {deleteError && (
+        <div className="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+          <strong className="font-bold">Delete Error: </strong>
+          <span className="block sm:inline">{deleteError}</span>
+        </div>
+      )}
 
-        {/* Table section */}
+      {/* Table section */}
         {loadingEmployees ? (
           <div className="flex justify-center items-center h-64">
             <p className="text-gray-500">Cargando empleados...</p>

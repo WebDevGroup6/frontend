@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom'; // Import Navigate
 import logoImage from '../../assets/logo.svg';
 import labImage from '../../assets/lab.svg';
 import { loginUser } from '../../services/authService'; // Re-enable API call
@@ -11,7 +11,13 @@ const Login = () => {
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
-    const { login } = useAuth(); // Get login from context
+    const { login, isAuthenticated } = useAuth(); // Get isAuthenticated from context
+
+    // Redirect if already authenticated
+    if (isAuthenticated) {
+        console.log('User already authenticated, redirecting to dashboard...');
+        return <Navigate to="/dashboard" replace />;
+    }
 
     const handleLoginSubmit = async (formData) => {
         setError(null);

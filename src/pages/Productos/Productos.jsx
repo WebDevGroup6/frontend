@@ -1,3 +1,4 @@
+// Contenido eliminado según solicitud.
 import React from 'react';
 import Table from '../../components/UI/Table'; // Assuming Table component path
 

@@ -1,5 +1,4 @@
 import './index.css'
-import { useState, useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 
 // Layout Components
@@ -17,8 +16,8 @@ import Productos from './pages/Productos/Productos';
 import Pruebas from './pages/Pruebas/Pruebas';
 import Resultados from './pages/Resultados/Resultados';
 
-// Import AuthProvider and useAuth from the context file
-import { AuthProvider, useAuth } from './context/AuthContext';
+// Import AuthProvider from the context file
+import { AuthProvider } from './context/AuthContext';
 
 function AppContent() {
   const location = useLocation();
@@ -45,8 +44,8 @@ function AppContent() {
           <Route path="/pruebas" element={<Pruebas />} />
           <Route path="/resultados" element={<Resultados />} />
 
-          {/* Redirect root path to dashboard (or login if preferred) */}
-          <Route path="/" element={<Navigate to="/dashboard" />} />
+          {/* Redirect root path to login */}
+          <Route path="/" element={<Navigate to="/login" />} />
 
           {/* Optional: Add a 404 Not Found page */}
           {/* <Route path="*" element={<NotFound />} /> */}

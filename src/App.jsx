@@ -15,6 +15,7 @@ import Proveedores from './pages/Proveedores/Proveedores';
 import Productos from './pages/Productos/Productos';
 import Pruebas from './pages/Pruebas/Pruebas';
 import Resultados from './pages/Resultados/Resultados';
+import Profile from './pages/Profile/Profile'; // Import Profile page
 
 // Import AuthProvider from the context file
 import { AuthProvider } from './context/AuthContext';
@@ -44,6 +45,7 @@ function AppContent() {
           <Route path="/productos" element={<Productos />} />
           <Route path="/pruebas" element={<Pruebas />} />
           <Route path="/resultados" element={<Resultados />} />
+          <Route path="/profile" element={<Profile />} /> {/* Add Profile route */}
 
           {/* Redirect root path to login */}
           <Route path="/" element={<Navigate to="/login" />} />

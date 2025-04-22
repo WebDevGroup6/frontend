@@ -66,27 +66,29 @@ function Table({ columns = [], data = [], itemIdKey, onRowClick, onEdit, onDelet
         </thead>
         <tbody>
           {data.length > 0 ? (
-            data.map((item) => { // Removed index, use itemIdKey for unique row key
-                const rowKey = item[itemIdKey];
+            data.map((item, index) => { // Add index back for fallback key
+                // Attempt to get the key from itemIdKey, fallback to index if undefined/null
+                let rowKey = itemIdKey ? item[itemIdKey] : index;
                 if (rowKey === undefined || rowKey === null) {
-                    console.warn("Missing unique key for row:", item, `using key: ${itemIdKey}`);
-                    // Fallback key, might not be ideal
-                    // rowKey = JSON.stringify(item);
+                    console.warn("Missing unique key for row:", item, `using key: ${itemIdKey}. Falling back to index: ${index}`);
+                    rowKey = index; // Use index as a fallback key
                 }
                 return (
                     <tr
-                        key={rowKey} // Use the unique ID from data as the key
+                        key={rowKey} // Use the unique ID or index as the key
                         onClick={() => onRowClick && onRowClick(item)} // Conditionally add onClick
                         className={`bg-white border-b dark:bg-gray-800 dark:border-gray-700 ${onRowClick ? 'hover:bg-gray-50 dark:hover:bg-gray-600 cursor-pointer' : ''}`}
                     >
                         {/* Optional: Checkbox cell */}
                         {/* <td class="w-4 p-4"> ... </td> */}
 
-                        {columns.map((col) => { // Iterate through column objects
+                        {columns.map((col, colIndex) => { // Iterate through column objects, get index
                             // Render regular data cell using the accessor
-                            const cellValue = item[col.accessor];
+                            const cellValue = col.accessor ? item[col.accessor] : 'N/A'; // Handle missing accessor safely
+                            // Ensure cell key is unique within the row using rowKey and colIndex
+                            const cellKey = `${rowKey}-${colIndex}`;
                             return (
-                                <td className="px-6 py-4" key={col.accessor}> {/* Use accessor for cell key */}
+                                <td className="px-6 py-4" key={cellKey}> {/* Use combined rowKey and column index for cell key */}
                                 {/* Basic rendering, adjust if complex data structures or formatting needed */}
                                 {typeof cellValue === 'boolean' ? (cellValue ? 'Sí' : 'No') : (cellValue ?? 'N/A')} {/* Handle null/undefined */}
                                 </td>

@@ -48,13 +48,20 @@ export const AuthProvider = ({ children }) => {
         // window.location.href = '/login'; // Force reload/redirect if needed
     };
 
+    // Function to update user data in context (e.g., after profile update)
+    const updateUserContext = (updatedUserData) => {
+        setUser(updatedUserData);
+        // Optionally update localStorage as well, if you store more than just the basic user object
+        localStorage.setItem('authUser', JSON.stringify(updatedUserData));
+    };
+
     // Don't render children until initial auth check is complete
     if (loading) {
         return <div>Loading...</div>; // Or a proper loading spinner
     }
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, login, logout, loading }}>
+        <AuthContext.Provider value={{ isAuthenticated, user, login, logout, loading, updateUserContext }}> {/* Add updateUserContext to value */}
             {children}
         </AuthContext.Provider>
     );

@@ -74,7 +74,7 @@ export default function ProductTable({ products, onEdit, onDelete, onRowClick, s
                   {product.estado || 'Desconocido'}
                 </span>
               </td>
-               {/* Removed Nivel de Riesgo cell */}
+              {/* Removed Nivel de Riesgo cell */}
               <td
                 className="px-6 py-4 whitespace-nowrap text-sm font-medium"
                 onClick={(e) => e.stopPropagation()} // Prevent row click on actions

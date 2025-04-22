@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 
+// Define initialFormData outside the component
+const initialFormData = {
+  codigo: '',
+  rnc: '',
+  nombre: '',
+  direccion: '',
+  contacto: '',
+  municipio: '',
+  estado: 'Activo',
+};
+
 function ProveedorForm({ proveedor, onSubmit, onCancel, loading, error }) {
   const isEditMode = !!proveedor;
-  const initialFormData = {
-    codigo: '',
-    rnc: '',
-    nombre: '',
-    direccion: '',
-    contacto: '',
-    municipio: '',
-    estado: 'Activo',
-  };
 
   const [formData, setFormData] = useState(initialFormData);
 
@@ -26,9 +28,12 @@ function ProveedorForm({ proveedor, onSubmit, onCancel, loading, error }) {
         estado: proveedor.estado || 'Activo',
       });
     } else {
-      setFormData(initialFormData);
+      // Reset form only if not in edit mode or proveedor becomes null
+      if (!isEditMode) {
+        setFormData(initialFormData);
+      }
     }
-  }, [proveedor, isEditMode, initialFormData]); // Added initialFormData to dependency array
+  }, [proveedor, isEditMode]); // Removed initialFormData from dependency array
 
   const handleChange = (e) => {
     const { name, value } = e.target;

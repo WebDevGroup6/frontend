@@ -30,6 +30,7 @@ function AppContent() {
       {showLayout && <Navbar />}
       {/* Remove container, mx-auto, px-4, py-8 from main. Keep flex-grow */}
       <main className="flex-grow">
+        
         <Routes>
           {/* Public Route */}
           <Route path="/login" element={<Login />} />

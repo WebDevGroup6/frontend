@@ -9,11 +9,18 @@ function Modal({ isOpen, onClose, title, children }) {
       id="default-modal"
       tabIndex="-1"
       aria-hidden={!isOpen}
-      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden bg-gray-900 bg-opacity-50 dark:bg-opacity-80"
+      // Added backdrop-blur-sm for blur effect
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto overflow-x-hidden  bg-opacity-50 backdrop-blur-sm dark:bg-opacity-80"
       onClick={onClose} // Close modal on backdrop click
     >
       <div
-        className="relative p-4 w-full max-w-2xl max-h-full"
+        // Added animation class: animate-zoom-in
+        // Define this animation in your global CSS or Tailwind config:
+        // @keyframes zoom-in { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        // .animate-zoom-in { animation: zoom-in 0.3s ease-out forwards; }
+        // Or in tailwind.config.js:
+        // theme: { extend: { animation: { 'zoom-in': 'zoom-in 0.3s ease-out forwards' }, keyframes: { 'zoom-in': { 'from': { opacity: '0', transform: 'scale(0.95)' }, 'to': { opacity: '1', transform: 'scale(1)' } } } } }
+        className="relative p-4 w-full max-w-2xl max-h-full animate-zoom-in" // <-- Animation class added here
         onClick={(e) => e.stopPropagation()} // Prevent closing when clicking inside modal content
       >
         {/* Modal content */}

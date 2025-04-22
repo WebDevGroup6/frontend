@@ -55,7 +55,6 @@ export default function Employees() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
-            <h1> Hola bing bong</h1>
           </div>
           
           <div className="flex items-center">

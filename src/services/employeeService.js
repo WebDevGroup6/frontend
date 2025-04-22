@@ -31,6 +31,7 @@ const createAuthHeaders = () => {
 export const getEmployees = async () => {
   try {
     const response = await apiClient.get("/employees"); // Use apiClient
+    console.log("Response from API:", response.data); // Log the response data
     return response.data;
   } catch (error) {
     console.error("Error fetching employees:", error.response || error.message);

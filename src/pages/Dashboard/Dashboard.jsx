@@ -1,254 +1,183 @@
 import React from 'react';
-// Consider importing icons from a library like Heroicons or using custom SVGs
-// import { ArrowRightIcon, ArrowUturnLeftIcon } from '@heroicons/react/24/outline'; // Example import
+// Consider using a charting library like Recharts, Chart.js, or Nivo for dynamic charts
+// import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts'; // Example import
+
+// Placeholder data - Replace with data fetched from your API
+const statsData = {
+  muestrasPendientes: { value: 143, change: 2.5, changeType: 'increase' },
+  muestrasRealizadas: { value: 50, change: 2.5, changeType: 'neutral' }, // Assuming neutral based on color #454D7D
+  pruebasRealizadas: { value: 21, change: 2.5, changeType: 'decrease' },
+  resultadosCompletos: { value: 21, change: 2.5, changeType: 'decrease' }, // Assuming decrease based on color #F04D4D
+};
+
+const chartData = [
+  { name: 'Muestras Pendientes', value: 143, color: '#FD981F' }, // Orange
+  { name: 'Muestras Realizadas', value: 50, color: '#384CFF' },  // Blue
+  { name: 'Pruebas Realizadas', value: 21, color: '#454D7D' },  // Dark Blue/Purple
+  { name: 'Resultados Completos', value: 21, color: '#5DFF3D' }, // Green
+];
+
+const onlineEmployees = [
+    { name: 'Ámbar Tiburcio', online: true },
+    { name: 'Miguel Filpo', online: true },
+    { name: 'Obal Nina', online: true },
+    { name: 'Josmer Peralta', online: true },
+    { name: 'Pedro Ramírez', online: false },
+    // Add more employees as needed
+];
+
+// Helper to determine color based on change type
+const getChangeColor = (type) => {
+  switch (type) {
+    case 'increase': return 'text-orange-600'; // As per Muestras Pendientes % color #F68631
+    case 'decrease': return 'text-red-600';   // As per Pruebas Realizadas % color #F04D4D
+    case 'neutral': return 'text-indigo-900'; // As per Muestras Realizadas % color #454D7D
+    default: return 'text-gray-600';
+  }
+};
+
+// Simple Donut Chart Component (SVG based - consider a library for advanced features)
+const DonutChart = ({ data }) => {
+  const total = data.reduce((sum, item) => sum + item.value, 0);
+  let accumulatedPercentage = 0;
+
+  return (
+    <svg viewBox="0 0 36 36" className="w-full h-full">
+      <path className="text-gray-200" strokeWidth="3.8" fill="none"
+          d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+      />
+      {data.map((item, index) => {
+        const percentage = (item.value / total) * 100;
+        const strokeDasharray = `${percentage}, 100`;
+        const strokeDashoffset = `-${accumulatedPercentage}`;
+        accumulatedPercentage += percentage;
+        return (
+          <path
+            key={index}
+            stroke={item.color}
+            strokeWidth="4"
+            fill="none"
+            strokeDasharray={strokeDasharray}
+            strokeDashoffset={strokeDashoffset}
+            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+          />
+        );
+      })}
+    </svg>
+  );
+};
+
 
 function Dashboard() {
+  // TODO: Fetch data using useEffect and useState
+
   return (
-    <div className="p-6 flex flex-col gap-6 bg-gray-50 min-h-screen"> {/* Main container */}
+    <div className="p-6 flex flex-col gap-6 bg-gray-50 min-h-screen font-['Roboto']"> {/* Main container */}
 
-      {/* Top Row */}
-      <div className="flex flex-wrap lg:flex-nowrap gap-6 items-start">
+      <div className="flex flex-col lg:flex-row gap-6">
 
-        {/* Left: Customer Satisfaction */}
-        {/* Card 4: Customer Satisfaction Score */}
-        <div data-layer="Frame 36469" className="w-full lg:flex-1 bg-white rounded-lg shadow-[0px_4px_10px_rgba(0,0,0,0.05)] border border-gray-200">
-           <div className="p-6">
-            <div data-layer="Description Top" className="text-gray-800 text-lg font-semibold font-['Roboto'] leading-normal tracking-tight mb-6">Customer Satisfaction Score</div>
-            <div data-layer="Frame 36467" className="flex flex-wrap justify-center md:justify-start items-center gap-8 md:gap-16">
-              {/* Placeholder for Chart - Replace with your actual chart component */}
-              <div className="w-48 h-48 md:w-56 md:h-56 flex items-center justify-center bg-gray-100 rounded-full">
-                 {/* Example using SVG Donut Chart (basic) */}
-                 <svg viewBox="0 0 36 36" className="w-full h-full">
-                    <path className="text-gray-200" strokeWidth="3.8" fill="none"
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                    {/* Segments (adjust stroke-dasharray and stroke-dashoffset based on data) */}
-                    {/* Very Satisfied (Dark Blue ~40%) */}
-                    <path className="text-indigo-700" strokeWidth="4" fill="none"
-                        strokeDasharray="40, 100" // 40%
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                     {/* Satisfied (Yellow ~25%) */}
-                    <path className="text-yellow-400" strokeWidth="4" fill="none"
-                        strokeDasharray="25, 100"
-                        strokeDashoffset="-40" // Start after previous segment
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                     {/* Neutral (Light Pink ~15%) */}
-                     <path className="text-pink-200" strokeWidth="4" fill="none"
-                        strokeDasharray="15, 100"
-                        strokeDashoffset="-65" // 40 + 25
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                     {/* Unsatisfied (Light Blue ~10%) */}
-                     <path className="text-sky-400" strokeWidth="4" fill="none"
-                        strokeDasharray="10, 100"
-                        strokeDashoffset="-80" // 40 + 25 + 15
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                     {/* User Name (Pink ~10%) */}
-                     <path className="text-pink-400" strokeWidth="4" fill="none"
-                        strokeDasharray="10, 100"
-                        strokeDashoffset="-90" // 40 + 25 + 15 + 10
-                        d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                    />
-                 </svg>
-                 {/* <span className="text-gray-500 text-sm">Chart Placeholder</span> */}
+        {/* Left Column: Stacked Cards */}
+        <div className="flex flex-col gap-6 w-full lg:w-[494px] flex-shrink-0">
+
+          {/* Card 1: Muestras Pendientes */}
+          <div className="w-full p-5 bg-orange-100/15 rounded-lg shadow-md border border-gray-200"> {/* Approximated bg-opacity */}
+            <div className="text-gray-600 text-base font-medium mb-3 leading-6 tracking-[0.15px]">Muestras Pendientes</div>
+            <div className="flex flex-col gap-1">
+              <div className="text-gray-900 text-4xl font-normal leading-[44px]">{statsData.muestrasPendientes.value}</div>
+              <div className={`${getChangeColor(statsData.muestrasPendientes.changeType)} text-sm font-medium leading-5 tracking-[0.1px]`}>
+                {statsData.muestrasPendientes.change}%
+              </div>
+            </div>
+            {/* Removed "Compared to last month" as it wasn't in the new design snippet */}
+          </div>
+
+          {/* Card 2: Muestras Realizadas */}
+          <div className="w-full p-5 bg-blue-100/15 rounded-lg shadow-md border border-gray-200"> {/* Approximated bg-opacity */}
+            <div className="text-gray-600 text-base font-medium mb-3 leading-6 tracking-[0.15px]">Muestras Realizadas</div>
+            <div className="flex flex-col gap-1">
+              <div className="text-gray-900 text-4xl font-normal leading-[44px]">{statsData.muestrasRealizadas.value}</div>
+              <div className={`${getChangeColor(statsData.muestrasRealizadas.changeType)} text-sm font-medium leading-5 tracking-[0.1px]`}>
+                {statsData.muestrasRealizadas.change}%
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3: Pruebas Realizadas */}
+          <div className="w-full p-5 bg-indigo-100/20 rounded-lg shadow-md border border-gray-200"> {/* Approximated bg-opacity */}
+            <div className="text-gray-600 text-base font-medium mb-3 leading-6 tracking-[0.15px]">Pruebas Realizadas</div>
+            <div className="flex flex-col gap-1">
+              <div className="text-gray-900 text-4xl font-normal leading-[44px]">{statsData.pruebasRealizadas.value}</div>
+              <div className={`${getChangeColor(statsData.pruebasRealizadas.changeType)} text-sm font-medium leading-5 tracking-[0.1px]`}>
+                {statsData.pruebasRealizadas.change}%
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4: Resultados Completos */}
+          <div className="w-full p-5 bg-green-100/20 rounded-lg shadow-md border border-gray-200"> {/* Approximated bg-opacity */}
+            <div className="text-gray-600 text-base font-medium mb-3 leading-6 tracking-[0.15px]">Resultados Completos</div>
+            <div className="flex flex-col gap-1">
+              <div className="text-gray-900 text-4xl font-normal leading-[44px]">{statsData.resultadosCompletos.value}</div>
+              <div className={`${getChangeColor(statsData.resultadosCompletos.changeType)} text-sm font-medium leading-5 tracking-[0.1px]`}>
+                {statsData.resultadosCompletos.change}%
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        {/* Right Column: Chart and Online Employees */}
+        <div className="flex flex-col gap-6 w-full lg:flex-1">
+
+          {/* Top Right: Chart Card */}
+          <div className="w-full bg-white rounded-lg shadow-md border border-gray-200 p-6">
+            {/* Title - Using a more generic title */}
+            <div className="text-gray-900 text-base font-medium leading-6 tracking-[0.15px] mb-6">Estadísticas Generales</div>
+            <div className="flex flex-wrap justify-center md:justify-start items-center gap-8 md:gap-16 lg:gap-24"> {/* Increased gap */}
+              {/* Chart */}
+              <div className="w-48 h-48 md:w-64 md:h-64 flex items-center justify-center">
+                 {/* Replace with your interactive chart component if needed */}
+                 <DonutChart data={chartData} />
               </div>
               {/* Legend */}
-              <div data-layer="Frame 36466" className="flex flex-col justify-start items-start gap-4">
-                {/* List Item 1 */}
-                <div data-layer="Frame 34434" className="w-64 flex justify-between items-center">
-                  <div data-layer="List Item With" className="flex justify-center items-center gap-2">
-                    <div className="w-3 h-3 bg-indigo-700 rounded-full"></div> {/* Color indicator */}
-                    <div data-layer="Text" className="Text text-gray-700 text-sm font-medium font-['Roboto']">Very Satisfied</div>
-                  </div>
-                  <div data-layer="Frame 36440" className="flex justify-start items-center gap-3">
-                    <div data-layer="Text" className="Text text-gray-600 text-sm font-medium font-['Roboto']">24</div>
-                    <div data-layer="Frame 36439" className="px-1.5 py-0.5 bg-orange-100 rounded-md flex justify-start items-center gap-1">
-                      {/* Up Arrow */}
-                      <svg className="w-3 h-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 15l7-7 7 7"></path></svg>
-                      <div data-layer="Text" className="Text text-center text-orange-700 text-xs font-medium font-['Roboto']">8.2%</div>
+              <div className="flex flex-col justify-start items-start gap-4 md:gap-6"> {/* Increased gap */}
+                {chartData.map((item, index) => (
+                  <div key={index} className="w-64 flex justify-between items-center">
+                    <div className="flex justify-center items-center gap-2">
+                      <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }}></div>
+                      <div className="text-gray-900 text-xs font-semibold leading-4 tracking-[0.5px]">{item.name}</div>
+                    </div>
+                    <div className="text-gray-600 text-xs font-medium leading-4 tracking-[0.5px]">
+                      {item.value}
                     </div>
                   </div>
-                </div>
-                {/* List Item 2 */}
-                <div data-layer="Frame 34435" className="w-64 flex justify-between items-center">
-                   <div data-layer="List Item With" className="flex justify-center items-center gap-2">
-                    <div className="w-3 h-3 bg-yellow-400 rounded-full"></div> {/* Color indicator */}
-                    <div data-layer="Text" className="Text text-gray-700 text-sm font-medium font-['Roboto']">Satisfied</div>
-                  </div>
-                  <div data-layer="Frame 36440" className="flex justify-start items-center gap-3">
-                    <div data-layer="Text" className="Text text-gray-600 text-sm font-medium font-['Roboto']">34</div>
-                     <div data-layer="Frame 36440" className="px-1.5 py-0.5 bg-orange-100 rounded-md flex justify-start items-center gap-1">
-                       <svg className="w-3 h-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 15l7-7 7 7"></path></svg>
-                      <div data-layer="Text" className="Text text-center text-orange-700 text-xs font-medium font-['Roboto']">8.2%</div>
-                    </div>
-                  </div>
-                </div>
-                 {/* List Item 3 (Neutral) */}
-                <div data-layer="Frame 34436" className="w-64 flex justify-between items-center">
-                  <div data-layer="List Item With" className="flex justify-center items-center gap-2">
-                    <div className="w-3 h-3 bg-pink-200 rounded-full"></div> {/* Color indicator */}
-                    <div data-layer="Text" className="Text text-gray-700 text-sm font-medium font-['Roboto']">Neutral</div>
-                  </div>
-                  <div data-layer="Frame 36440" className="flex justify-start items-center gap-3">
-                    <div data-layer="Text" className="Text text-gray-600 text-sm font-medium font-['Roboto']">52</div>
-                    <div data-layer="Frame 36440" className="px-1.5 py-0.5 bg-orange-100 rounded-md flex justify-start items-center gap-1">
-                      <svg className="w-3 h-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 15l7-7 7 7"></path></svg>
-                      <div data-layer="Text" className="Text text-center text-orange-700 text-xs font-medium font-['Roboto']">8.2%</div>
-                    </div>
-                  </div>
-                </div>
-                {/* List Item 4 (Unsatisfied) */}
-                <div data-layer="Frame 34437" className="w-64 flex justify-between items-center">
-                  <div data-layer="List Item With" className="flex justify-center items-center gap-2">
-                    <div className="w-3 h-3 bg-sky-400 rounded-full"></div> {/* Color indicator */}
-                    <div data-layer="Text" className="Text text-gray-700 text-sm font-medium font-['Roboto']">Unsatisfied</div>
-                  </div>
-                  <div data-layer="Frame 36440" className="flex justify-start items-center gap-3">
-                    <div data-layer="Text" className="Text text-gray-600 text-sm font-medium font-['Roboto']">20</div>
-                    <div data-layer="Frame 36440" className="px-1.5 py-0.5 bg-red-100 rounded-md flex justify-start items-center gap-1">
-                      {/* Down Arrow */}
-                      <svg className="w-3 h-3 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M19 9l-7 7-7-7"></path></svg>
-                      <div data-layer="Text" className="Text text-center text-red-700 text-xs font-medium font-['Roboto']">8.2%</div>
-                    </div>
-                  </div>
-                </div>
-                 {/* List Item 5 (User Name / Very Unsatisfied?) */}
-                <div data-layer="Frame 34438" className="w-64 flex justify-between items-center">
-                  <div data-layer="List Item With" className="flex justify-center items-center gap-2">
-                     <div className="w-3 h-3 bg-pink-400 rounded-full"></div> {/* Color indicator */}
-                    <div data-layer="Text" className="Text text-gray-700 text-sm font-medium font-['Roboto']">User Name</div> {/* Or Very Unsatisfied */}
-                  </div>
-                  <div data-layer="Frame 36440" className="flex justify-start items-center gap-3">
-                    <div data-layer="Text" className="Text text-gray-600 text-sm font-medium font-['Roboto']">12</div>
-                    <div data-layer="Frame 36440" className="px-1.5 py-0.5 bg-orange-100 rounded-md flex justify-start items-center gap-1">
-                       <svg className="w-3 h-3 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 15l7-7 7 7"></path></svg>
-                      <div data-layer="Text" className="Text text-center text-orange-700 text-xs font-medium font-['Roboto']">8.2%</div>
-                    </div>
-                  </div>
-                </div>
+                ))}
               </div>
             </div>
           </div>
-        </div>
 
-        {/* Right: Stacked Cards */}
-        <div className="flex flex-col gap-6 w-full lg:w-80 flex-shrink-0"> {/* Adjusted width */}
-
-          {/* Card 1: Total Closed Calls */}
-          <div data-layer="Frame 36510" className="w-full p-5 bg-white rounded-lg shadow-[0px_4px_10px_rgba(0,0,0,0.05)] border border-gray-200">
-            <div data-layer="Total Closed Calls" className="text-gray-600 text-base font-medium font-['Roboto'] mb-3">Total Closed Calls</div>
-            <div className="flex justify-between items-start mb-1">
-              <div className="flex flex-col gap-1">
-                <div data-layer="143" className="text-gray-900 text-3xl font-semibold font-['Roboto']">143</div>
-                <div data-layer="2.5%" className="text-orange-600 text-sm font-medium font-['Roboto']">2.5%</div>
-              </div>
-              <div className="p-3 bg-orange-100 rounded-lg">
-                {/* Right Arrow Icon */}
-                <svg className="w-6 h-6 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-              </div>
-            </div>
-            <div data-layer="Compared to Last month" className="text-gray-500 text-sm font-normal font-['Roboto']">Compared to Last month</div>
-          </div>
-
-          {/* Card 3: Job Requests */}
-          <div data-layer="Frame 36508" className="w-full p-5 bg-white rounded-lg shadow-[0px_4px_10px_rgba(0,0,0,0.05)] border border-gray-200">
-            <div data-layer="Job Requests" className="text-gray-600 text-base font-medium font-['Roboto'] mb-3">Job Requests</div>
-            <div className="flex justify-between items-start mb-1">
-              <div className="flex flex-col gap-1">
-                <div data-layer="50" className="text-gray-900 text-3xl font-semibold font-['Roboto']">50</div>
-                <div data-layer="2.5%" className="text-gray-600 text-sm font-medium font-['Roboto']">2.5%</div> {/* Neutral color */}
-              </div>
-              <div className="p-3 bg-gray-100 rounded-lg">
-                 {/* Right Arrow Icon */}
-                 <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
-              </div>
-            </div>
-            <div data-layer="Compared to Last month" className="text-gray-500 text-sm font-normal font-['Roboto']">Compared to Last month</div>
-          </div>
-
-          {/* Card 2: Outstanding RMAs */}
-          <div data-layer="Frame 36509" className="w-full p-5 bg-white rounded-lg shadow-[0px_4px_10px_rgba(0,0,0,0.05)] border border-gray-200">
-            <div data-layer="Outstanding RMAs" className="text-gray-600 text-base font-medium font-['Roboto'] mb-3">Outstanding RMAs</div>
-            <div className="flex justify-between items-start mb-1">
-              <div className="flex flex-col gap-1">
-                <div data-layer="21" className="text-gray-900 text-3xl font-semibold font-['Roboto']">21</div>
-                <div data-layer="2.5%" className="text-red-600 text-sm font-medium font-['Roboto']">2.5%</div>
-              </div>
-              <div className="p-3 bg-red-100 rounded-lg">
-                 {/* Left Curved Arrow Icon (Reply/U-turn Left) */}
-                 <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 15L3 9m0 0l6-6M3 9h12a6 6 0 010 12h-3"></path>
-                 </svg>
-              </div>
-            </div>
-            <div data-layer="Compared to Last month" className="text-gray-500 text-sm font-normal font-['Roboto']">Compared to Last month</div>
-          </div>
-
-        </div>
-      </div>
-
-      {/* Bottom Row */}
-      <div className="flex gap-6">
-        {/* Card 5: Trabajadores Online */}
-        <div data-layer="Frame 36505" className="w-full max-w-xl p-6 bg-white rounded-lg shadow-[0px_4px_10px_rgba(0,0,0,0.05)] border border-gray-200"> {/* Adjusted max-width */}
-          <div data-layer="Description Top" className="text-gray-800 text-lg font-semibold font-['Roboto'] mb-5">Trabajadores Online</div>
-          <div className="flex gap-4">
-            {/* Timeline Connector */}
-            <div className="flex flex-col items-center mt-1">
-              {[...Array(7)].map((_, index, arr) => ( // Assuming 7 items from image
-                <div key={index} className="flex flex-col items-center h-8"> {/* Height matches text line-height + gap */}
-                  <div className="w-2.5 h-2.5 bg-white border-2 border-blue-600 rounded-full z-10"></div>
-                  {index < arr.length - 1 && ( // Don't draw line after last item
-                    <div className="w-px flex-grow bg-gray-300 -mt-1"></div>
-                  )}
+          {/* Bottom Right: Empleados Online */}
+          <div className="w-full p-6 bg-blue-50/60 rounded-lg shadow-md border border-gray-200"> {/* Approximated bg-opacity */}
+            <div className="text-gray-900 text-base font-bold font-['Inter'] mb-5 leading-6 tracking-[0.15px]">Empleados</div> {/* Using Inter font as specified */}
+            <div className="flex flex-col gap-5"> {/* Gap approx 19px */}
+              {onlineEmployees.map((employee, index) => (
+                <div key={index} className="flex justify-between items-center">
+                  <div className="text-gray-800 text-base font-medium font-['Inter'] leading-6">{employee.name}</div> {/* Using Inter font */}
+                  <div className={`w-3 h-3 rounded-full ${employee.online ? 'bg-green-500' : 'bg-red-500'}`}></div> {/* Status indicator */}
                 </div>
               ))}
             </div>
-            {/* List of Workers */}
-            <div className="flex-1 flex flex-col gap-[22px]"> {/* Adjusted gap to align with timeline */}
-              {/* Worker Item 1 */}
-              <div className="flex justify-between items-center">
-                <div className="text-gray-800 text-sm font-medium font-['Roboto']">Ámbar Tiburcio</div>
-                {/* <div className="text-gray-500 text-sm font-medium">34</div> */}
-              </div>
-              {/* Worker Item 2 */}
-              <div className="flex justify-between items-center">
-                <div className="text-gray-800 text-sm font-medium font-['Roboto']">Miguel Filpo</div>
-                <div className="text-gray-500 text-sm font-medium">34</div>
-              </div>
-              {/* Worker Item 3 */}
-              <div className="flex justify-between items-center">
-                <div className="text-gray-800 text-sm font-medium font-['Roboto']">Obal Nina</div>
-                 <div className="text-gray-500 text-sm font-medium">52</div>
-              </div>
-              {/* Worker Item 4 */}
-              <div className="flex justify-between items-center">
-                <div className="text-gray-800 text-sm font-medium font-['Roboto']">Josmer Peralta</div>
-                 <div className="text-gray-500 text-sm font-medium">20</div>
-              </div>
-               {/* Worker Item 5 */}
-              <div className="flex justify-between items-center">
-                <div className="text-gray-800 text-sm font-medium font-['Roboto']">Engineer Assignedx</div>
-                 <div className="text-gray-500 text-sm font-medium">13</div>
-              </div>
-               {/* Worker Item 6 */}
-              <div className="flex justify-between items-center">
-                <div className="text-gray-800 text-sm font-medium font-['Roboto']">Part Change</div>
-                 <div className="text-gray-500 text-sm font-medium">13</div>
-              </div>
-               {/* Worker Item 7 */}
-              <div className="flex justify-between items-center">
-                <div className="text-gray-800 text-sm font-medium font-['Roboto']">Call Closed</div>
-                 <div className="text-gray-500 text-sm font-medium">12</div>
-              </div>
-            </div>
           </div>
+
         </div>
-        {/* Add other bottom row cards here if needed */}
       </div>
+
+      {/* Remove or adapt the original bottom row if it's no longer needed */}
+      {/*
+      <div className="flex gap-6">
+         Original Bottom Row Content Here
+      </div>
+      */}
 
     </div>
   );

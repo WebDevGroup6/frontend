@@ -78,14 +78,17 @@ export default function Muestras() {
   };
 
   // --------- columnas + filas ----------
+  // Updated columns to match the expected object format for the Table component
   const columns = [
-    "Código",
-    "Producto",
-    "Proveedor",
-    "Responsable",
-    "Fecha Muestra",
-    "Observaciones",
-    "Acciones",
+    { header: "Código", accessor: "Código" },
+    { header: "Producto", accessor: "Producto" },
+    { header: "Proveedor", accessor: "Proveedor" },
+    { header: "Responsable", accessor: "Responsable" },
+    { header: "Fecha Muestra", accessor: "Fecha Muestra" },
+    { header: "Observaciones", accessor: "Observaciones" },
+    // Actions column doesn't need an accessor if rendered separately by the Table component
+    // If actions are passed as data, it needs an accessor like:
+    // { header: "Acciones", accessor: "Acciones" },
   ];
 
   const data = muestras.map((m) => ({
@@ -130,7 +133,7 @@ export default function Muestras() {
         + Añadir Muestra
       </button>
 
-      <Table columns={columns} data={data} />
+      <Table columns={columns} data={data} itemIdKey="Código" onEdit={openEdit} /* Pass onDelete if handled by Table */ />
 
       <Modal
         isOpen={isOpen}

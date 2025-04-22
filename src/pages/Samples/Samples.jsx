@@ -1,11 +1,21 @@
 import React, { useState, useEffect } from "react";
-import axios from "axios";
 import Table from "../../components/UI/Table";
 import Modal from "../../components/UI/Modal";
 
 export default function Muestras() {
-  // ------------- estados -------------
-  const [muestras, setMuestras] = useState([]);
+  // Inicializar desde localStorage
+  const [muestras, setMuestras] = useState(() => {
+    const saved = localStorage.getItem("muestras");
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  // Persistir en localStorage cuando cambie muestras
+  useEffect(() => {
+    localStorage.setItem("muestras", JSON.stringify(muestras));
+  }, [muestras]);
+
+  // Estado UI
+  const [searchTerm, setSearchTerm] = useState("");
   const [isOpen, setIsOpen] = useState(false);
   const [formValues, setFormValues] = useState({
     id_muestra: "",
@@ -17,25 +27,7 @@ export default function Muestras() {
     observaciones: "",
   });
 
-  // ------------ list & refresh -----------
-  useEffect(() => {
-    fetchMuestras();
-  }, []);
-  const fetchMuestras = async () => {
-    try {
-      const { data } = await axios.get("http://localhost:3000/api/muestras");
-      setMuestras(data);
-    } catch (err) {
-      console.error("Error cargando muestras:", err);
-    }
-  };
-
-  // ---------- form handlers -------------
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues((prev) => ({ ...prev, [name]: value }));
-  };
-
+  // Modal nuevo
   const openNew = () => {
     setFormValues({
       id_muestra: "",
@@ -49,36 +41,84 @@ export default function Muestras() {
     setIsOpen(true);
   };
 
+  // Modal editar
   const openEdit = (m) => {
     setFormValues({
       ...m,
-      fecha_muestra: m.fecha_muestra.split("T")[0],
+      fecha_muestra: m.fecha_muestra.includes("T")
+        ? m.fecha_muestra.split("T")[0]
+        : m.fecha_muestra,
     });
     setIsOpen(true);
   };
 
-  const handleSave = async () => {
-    try {
-      if (formValues.id_muestra) {
-        // editar
-        await axios.put(
-          `http://localhost:3000/api/muestras/${formValues.id_muestra}`,
-          formValues
-        );
-      } else {
-        // crear
-        await axios.post("http://localhost:3000/api/muestras", formValues);
-      }
-      setIsOpen(false);
-      fetchMuestras();
-    } catch (err) {
-      console.error("Error guardando muestra:", err);
-      alert("Error al guardar la muestra");
+  // Guardar
+  const handleSave = () => {
+    const {
+      id_muestra,
+      id_proveedor,
+      id_producto,
+      id_empleado,
+      id_prueba,
+      fecha_muestra,
+      observaciones,
+    } = formValues;
+    if (
+      !id_proveedor ||
+      !id_producto ||
+      !id_empleado ||
+      !id_prueba ||
+      !fecha_muestra
+    ) {
+      alert(
+        "Los campos Proveedor, Producto, Empleado, Prueba y Fecha son obligatorios"
+      );
+      return;
+    }
+
+    if (!id_muestra) {
+      // Crear
+      const newItem = {
+        ...formValues,
+        id_muestra: Date.now().toString(),
+      };
+      setMuestras((prev) => [...prev, newItem]);
+    } else {
+      // Editar
+      setMuestras((prev) =>
+        prev.map((x) =>
+          x.id_muestra === id_muestra ? { ...formValues } : x
+        )
+      );
+    }
+
+    setIsOpen(false);
+  };
+
+  // Eliminar
+  const handleDelete = (m) => {
+    if (window.confirm("¿Eliminar esta muestra?")) {
+      setMuestras((prev) =>
+        prev.filter((x) => x.id_muestra !== m.id_muestra)
+      );
     }
   };
 
-  // --------- columnas + filas ----------
-  // Updated columns to match the expected object format for the Table component
+  // Cambios formulario
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormValues((prev) => ({ ...prev, [name]: value }));
+  };
+
+  // Filtrar
+  const filtered = muestras.filter((m) =>
+    Object.values(m)
+      .join(" ")
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
+
+  // Columnas para Table
   const columns = [
     { header: "Código", accessor: "Código" },
     { header: "Producto", accessor: "Producto" },
@@ -86,17 +126,16 @@ export default function Muestras() {
     { header: "Responsable", accessor: "Responsable" },
     { header: "Fecha Muestra", accessor: "Fecha Muestra" },
     { header: "Observaciones", accessor: "Observaciones" },
-    // Actions column doesn't need an accessor if rendered separately by the Table component
-    // If actions are passed as data, it needs an accessor like:
-    // { header: "Acciones", accessor: "Acciones" },
+    { header: "Acciones", accessor: "Acciones" },
   ];
 
-  const data = muestras.map((m) => ({
+  // Datos para Table
+  const data = filtered.map((m) => ({
     Código: m.id_muestra,
-    Producto: m.producto_nombre || m.id_producto,
-    Proveedor: m.proveedor_nombre || m.id_proveedor,
-    Responsable: m.empleado_nombre || m.id_empleado,
-    "Fecha Muestra": new Date(m.fecha_muestra).toLocaleDateString(),
+    Producto: m.id_producto,
+    Proveedor: m.id_proveedor,
+    Responsable: m.id_empleado,
+    "Fecha Muestra": m.fecha_muestra,
     Observaciones: m.observaciones || "-",
     Acciones: (
       <>
@@ -108,14 +147,7 @@ export default function Muestras() {
         </button>
         <button
           className="text-red-500 hover:underline"
-          onClick={async () => {
-            if (window.confirm("¿Eliminar esta muestra?")) {
-              await axios.delete(
-                `http://localhost:3000/api/muestras/${m.id_muestra}`
-              );
-              fetchMuestras();
-            }
-          }}
+          onClick={() => handleDelete(m)}
         >
           Eliminar
         </button>
@@ -126,19 +158,31 @@ export default function Muestras() {
   return (
     <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Gestión de Muestras</h1>
-      <button
-        className="mb-4 bg-blue-600 text-white px-4 py-2 rounded"
-        onClick={openNew}
-      >
-        + Añadir Muestra
-      </button>
 
-      <Table columns={columns} data={data} itemIdKey="Código" onEdit={openEdit} /* Pass onDelete if handled by Table */ />
+      <div className="mb-4 flex justify-between items-center">
+        <input
+          type="text"
+          placeholder="Buscar muestra..."
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          className="p-2 border rounded w-1/3"
+        />
+        <button
+          className="bg-blue-600 text-white px-4 py-2 rounded"
+          onClick={openNew}
+        >
+          + Añadir Muestra
+        </button>
+      </div>
+
+      <Table columns={columns} data={data} itemIdKey="Código" />
 
       <Modal
         isOpen={isOpen}
         onClose={() => setIsOpen(false)}
-        title={formValues.id_muestra ? "Editar Muestra" : "Nueva Muestra"}
+        title={
+          formValues.id_muestra ? "Editar Muestra" : "Nueva Muestra"
+        }
       >
         <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
           {[
@@ -150,7 +194,7 @@ export default function Muestras() {
             <div key={name}>
               <label className="block font-medium">{label}</label>
               <input
-                type="number"
+                type="text"
                 name={name}
                 value={formValues[name]}
                 onChange={handleChange}
@@ -178,10 +222,10 @@ export default function Muestras() {
             />
           </div>
         </div>
-        <div className="mt-4 flex justify-end">
+        <div className="mt-4 flex justify-end space-x-2">
           <button
             onClick={() => setIsOpen(false)}
-            className="mr-2 px-4 py-2 rounded border"
+            className="px-4 py-2 rounded border"
           >
             Cancelar
           </button>

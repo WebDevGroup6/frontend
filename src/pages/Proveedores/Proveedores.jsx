@@ -136,7 +136,7 @@ export default function Proveedores() {
 
     }
 
-    // add | edit form
+    
     return (
       <div className="space-y-4">
         <h2 className="text-xl font-semibold">

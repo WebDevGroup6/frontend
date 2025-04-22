@@ -1,11 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-function Resultados() {
-  const [resultados, setResultados] = useState([]);
-  const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState('add'); // add | edit
-  const [selectedIndex, setSelectedIndex] = useState(null);
+export default function Resultados() {
+  // Inicializar a partir de localStorage (o array vacío si no hay nada)
+  const [resultados, setResultados] = useState(() => {
+    const stored = localStorage.getItem('resultados');
+    return stored ? JSON.parse(stored) : [];
+  });
+
   const [searchTerm, setSearchTerm] = useState('');
+  const [showModal, setShowModal] = useState(false);
+  const [modalMode, setModalMode] = useState('add'); // 'add' | 'edit'
+  const [selectedIndex, setSelectedIndex] = useState(null);
 
   const [form, setForm] = useState({
     codigoMuestra: '',
@@ -17,50 +22,25 @@ function Resultados() {
     status: 'Pendiente',
   });
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
+  // Guardar en localStorage cada vez que cambie "resultados"
+  useEffect(() => {
+    localStorage.setItem('resultados', JSON.stringify(resultados));
+  }, [resultados]);
 
-  const handleSubmit = () => {
-    const { codigoMuestra, prueba, laboratorio, responsable, fecha, descripcion } = form;
-    if (!codigoMuestra || !prueba || !laboratorio || !responsable || !fecha || !descripcion) {
-      alert('Todos los campos son obligatorios');
-      return;
-    }
+  // Filtrar según searchTerm
+  const filtered = resultados.filter((res) =>
+    Object.values(res)
+      .join(' ')
+      .toLowerCase()
+      .includes(searchTerm.toLowerCase())
+  );
 
-    if (modalMode === 'add') {
-      setResultados([...resultados, form]);
-    } else if (modalMode === 'edit' && selectedIndex !== null) {
-      const updated = [...resultados];
-      updated[selectedIndex] = form;
-      setResultados(updated);
-    }
+  // Handlers
+  const handleSearch = (e) => setSearchTerm(e.target.value);
 
-    closeModal();
-  };
-
-  const handleDelete = (index) => {
-    if (window.confirm('¿Seguro que deseas eliminar este resultado?')) {
-      const updated = [...resultados];
-      updated.splice(index, 1);
-      setResultados(updated);
-    }
-  };
-
-  const handleEdit = (index) => {
-    setForm(resultados[index]);
-    setSelectedIndex(index);
-    setModalMode('edit');
-    setShowModal(true);
-  };
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value.toLowerCase());
-  };
-
-  const closeModal = () => {
-    setShowModal(false);
+  const openAddModal = () => {
     setModalMode('add');
+    setSelectedIndex(null);
     setForm({
       codigoMuestra: '',
       prueba: '',
@@ -70,55 +50,92 @@ function Resultados() {
       descripcion: '',
       status: 'Pendiente',
     });
-    setSelectedIndex(null);
+    setShowModal(true);
   };
 
-  const filteredResultados = resultados.filter((res) =>
-    Object.values(res).some((val) =>
-      val.toLowerCase().includes(searchTerm)
-    )
-  );
+  const openEditModal = (idx) => {
+    setModalMode('edit');
+    setSelectedIndex(idx);
+    setForm(resultados[idx]);
+    setShowModal(true);
+  };
+
+  const handleDelete = (idx) => {
+    if (window.confirm('¿Seguro que deseas eliminar este resultado?')) {
+      const copy = [...resultados];
+      copy.splice(idx, 1);
+      setResultados(copy);
+    }
+  };
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm((f) => ({ ...f, [name]: value }));
+  };
+
+  const handleSubmit = () => {
+    const { codigoMuestra, prueba, laboratorio, responsable, fecha, descripcion } = form;
+    if (!codigoMuestra || !prueba || !laboratorio || !responsable || !fecha || !descripcion) {
+      alert('Todos los campos son obligatorios');
+      return;
+    }
+    const copy = [...resultados];
+    if (modalMode === 'add') {
+      copy.push(form);
+    } else {
+      copy[selectedIndex] = form;
+    }
+    setResultados(copy);
+    setShowModal(false);
+  };
+
+  const closeModal = () => setShowModal(false);
 
   return (
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Gestión de Resultados</h1>
 
+      {/* Barra de búsqueda y botón añadir */}
       <div className="mb-4 flex justify-between items-center">
         <input
           type="text"
           placeholder="Buscar resultado..."
-          className="p-2 border rounded w-1/3"
           value={searchTerm}
           onChange={handleSearch}
+          className="p-2 border rounded w-1/3"
         />
         <button
+          onClick={openAddModal}
           className="bg-green-500 text-white px-3 py-1 rounded"
-          onClick={() => {
-            setShowModal(true);
-            setModalMode('add');
-          }}
         >
           Añadir
         </button>
       </div>
 
+      {/* Tabla inline */}
       <table className="w-full border text-sm text-left">
         <thead className="bg-gray-100">
           <tr>
-            <th className="border px-2 py-1">Código de Muestra</th>
-            <th className="border px-2 py-1">Prueba</th>
-            <th className="border px-2 py-1">Laboratorio</th>
-            <th className="border px-2 py-1">Responsable</th>
-            <th className="border px-2 py-1">Fecha</th>
-            <th className="border px-2 py-1">Descripción</th>
-            <th className="border px-2 py-1">Status</th>
-            <th className="border px-2 py-1">Acciones</th>
+            {[
+              'Código de Muestra',
+              'Prueba',
+              'Laboratorio',
+              'Responsable',
+              'Fecha',
+              'Descripción',
+              'Status',
+              'Acciones',
+            ].map((col) => (
+              <th key={col} className="border px-2 py-1 font-semibold">
+                {col}
+              </th>
+            ))}
           </tr>
         </thead>
         <tbody>
-          {filteredResultados.length > 0 ? (
-            filteredResultados.map((res, index) => (
-              <tr key={index}>
+          {filtered.length > 0 ? (
+            filtered.map((res, idx) => (
+              <tr key={idx} className="hover:bg-gray-50">
                 <td className="border px-2 py-1">{res.codigoMuestra}</td>
                 <td className="border px-2 py-1">{res.prueba}</td>
                 <td className="border px-2 py-1">{res.laboratorio}</td>
@@ -127,15 +144,25 @@ function Resultados() {
                 <td className="border px-2 py-1">{res.descripcion}</td>
                 <td className="border px-2 py-1">{res.status}</td>
                 <td className="border px-2 py-1 space-x-2">
-                  <button onClick={() => handleEdit(index)} className="text-yellow-600 hover:underline">Modificar</button>
-                  <button onClick={() => handleDelete(index)} className="text-red-600 hover:underline">Quitar</button>
+                  <button
+                    onClick={() => openEditModal(idx)}
+                    className="text-yellow-500 hover:underline"
+                  >
+                    Modificar
+                  </button>
+                  <button
+                    onClick={() => handleDelete(idx)}
+                    className="text-red-500 hover:underline"
+                  >
+                    Quitar
+                  </button>
                 </td>
               </tr>
             ))
           ) : (
             <tr>
               <td colSpan="8" className="text-center p-4 text-gray-500">
-                No se encontraron resultados
+                No se encontraron resultados.
               </td>
             </tr>
           )}
@@ -209,16 +236,16 @@ function Resultados() {
             </div>
             <div className="mt-6 flex justify-end space-x-2">
               <button
-                onClick={handleSubmit}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
-              >
-                Guardar
-              </button>
-              <button
                 onClick={closeModal}
                 className="bg-gray-300 hover:bg-gray-400 px-4 py-2 rounded"
               >
                 Cancelar
+              </button>
+              <button
+                onClick={handleSubmit}
+                className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded"
+              >
+                Guardar
               </button>
             </div>
           </div>
@@ -227,6 +254,3 @@ function Resultados() {
     </div>
   );
 }
-
-export default Resultados;
-

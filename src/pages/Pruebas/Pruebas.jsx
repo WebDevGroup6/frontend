@@ -1,20 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Modal from '../../components/UI/Modal';
 
 export default function Pruebas() {
-  const [pruebas, setPruebas] = useState([
-    {
-      Nombre: 'Test Microbiológico',
-      Descripción: 'Análisis de bacterias',
-      'Asignado A': 'Lab A',
-      Laboratorios: 'L001',
-      Status: 'En Progreso',
-    },
-  ]);
+  // Cargar desde localStorage o inicializar
+  const [pruebas, setPruebas] = useState(() => {
+    const saved = localStorage.getItem('pruebas');
+    return saved
+      ? JSON.parse(saved)
+      : [
+          {
+            Nombre: 'Test Microbiológico',
+            Descripción: 'Análisis de bacterias',
+            'Asignado A': 'Lab A',
+            Laboratorios: 'L001',
+            Status: 'En Progreso',
+          },
+        ];
+  });
+
+  // Persistir en localStorage cuando cambie pruebas
+  useEffect(() => {
+    localStorage.setItem('pruebas', JSON.stringify(pruebas));
+  }, [pruebas]);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [showModal, setShowModal] = useState(false);
-  const [modalMode, setModalMode] = useState('add'); // 'add' o 'edit'
+  const [modalMode, setModalMode] = useState('add'); // 'add' | 'edit'
   const [selectedIndex, setSelectedIndex] = useState(null);
 
   const [form, setForm] = useState({
@@ -25,7 +36,7 @@ export default function Pruebas() {
     Status: 'Pendiente',
   });
 
-  // Filtrar resultados según searchTerm
+  // Filtrar según searchTerm
   const filtered = pruebas.filter((p) =>
     Object.values(p)
       .join(' ')
@@ -33,7 +44,7 @@ export default function Pruebas() {
       .includes(searchTerm.toLowerCase())
   );
 
-  // Handlers
+  // —— Handlers ——
   const handleSearch = (e) => setSearchTerm(e.target.value);
 
   const openAddModal = () => {
@@ -91,7 +102,7 @@ export default function Pruebas() {
     <div className="p-4">
       <h1 className="text-2xl font-bold mb-4">Gestión de Pruebas</h1>
 
-      {/* Barra de búsqueda y añadir */}
+      {/* Barra de búsqueda y botón de añadir */}
       <div className="mb-4 flex justify-between items-center">
         <input
           type="text"

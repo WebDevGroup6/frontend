@@ -40,8 +40,11 @@ export default function Employees() {
   );
 
   return (
+
     <div className="bg-gray-100 min-h-screen w-full p-4">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto"
+       
+      >
         
         {/* Search and action buttons section */}
         <div className="flex items-center justify-between mb-4">
@@ -52,6 +55,7 @@ export default function Employees() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
               </svg>
             </button>
+            <h1> Hola bing bong</h1>
           </div>
           
           <div className="flex items-center">
